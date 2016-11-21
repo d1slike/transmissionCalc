@@ -1,0 +1,26 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+jar {
+	baseName = 'transmission.calc'
+	version = '1.0.0-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+    compile 'com.jfoenix:jfoenix:1.0.0'
+	compile 'net.sf.opencsv:opencsv:2.3'
+	testCompile 'junit:junit:4.12'
+}
