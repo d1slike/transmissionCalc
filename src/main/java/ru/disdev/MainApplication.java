@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -18,7 +19,6 @@ public class MainApplication extends Application {
 
     private static Stage mainStage;
     private static State currentState;
-    private static BorderPane root;
 
     public static void main(String[] args) {
         launch(MainApplication.class, args);
@@ -27,8 +27,6 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
-        root = new BorderPane();
-        mainStage.setScene(new Scene(root));
         mainStage.setTitle(PROGRAM_NAME);
         nextState();
     }
@@ -44,7 +42,7 @@ public class MainApplication extends Application {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);
             Pane pane = FXMLLoader.load(url);
             mainStage.hide();
-            root.setCenter(pane);
+            mainStage.setScene(new Scene(pane));
             mainStage.sizeToScene();
             mainStage.centerOnScreen();
             Consumer<Stage> stageConfigurationCallback = currentState.getStageConfigurationCallback();
