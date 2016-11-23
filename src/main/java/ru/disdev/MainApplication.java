@@ -4,8 +4,6 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import ru.disdev.utils.AlertUtils;
@@ -27,13 +25,14 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
+        //mainStage.initStyle(StageStyle.UNDECORATED);
         mainStage.setTitle(PROGRAM_NAME);
         nextState();
     }
 
     public static void nextState() {
 
-        currentState = currentState == null ? State.UPDATE : currentState.next();
+        currentState = currentState == null ? State.MAIN : currentState.next();
 
         try {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);

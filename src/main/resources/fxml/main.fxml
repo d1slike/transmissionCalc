@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.layout.*?>
-<?import com.jfoenix.controls.*?>
-<?import java.lang.*?>
-
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0"
+            prefWidth="855.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.disdev.controller.MainController">
    <right>
       <VBox alignment="CENTER" prefHeight="574.0" prefWidth="140.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton text="Новый">
+            <JFXButton fx:id="newResultButton" prefHeight="39.0" prefWidth="378.0" ripplerFill="TRANSPARENT"
+                       text="Новый">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton text="Загрузить">
+            <JFXButton fx:id="importButton" prefHeight="39.0" prefWidth="211.0" text="Загрузить">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton text="Выгрузить">
+            <JFXButton fx:id="exportButton" prefHeight="39.0" prefWidth="337.0" text="Выгрузить">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -32,7 +34,11 @@
    <center>
       <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <content>
-            <JFXTreeTableView prefHeight="583.0" prefWidth="711.0" />
+            <TableView fx:id="resultTable" prefHeight="572.0" prefWidth="712.0">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+               </columnResizePolicy>
+            </TableView>
          </content>
       </ScrollPane>
    </center>
