@@ -32,11 +32,8 @@ public class MainApplication extends Application {
     }
 
     public static void nextState() {
-        if (currentState == null) {
-            currentState = State.UPDATE;
-        } else {
-            currentState = currentState.next();
-        }
+
+        currentState = currentState == null ? State.UPDATE : currentState.next();
 
         try {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);
