@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import ru.disdev.utils.AlertUtils;
 
 import java.net.URL;
@@ -25,14 +26,14 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
-        //mainStage.initStyle(StageStyle.UNDECORATED);
+        //mainStage.initStyle(StageStyle.UNDECORATED); //TODO заменить на свои кнопки
         mainStage.setTitle(PROGRAM_NAME);
         nextState();
     }
 
     public static void nextState() {
 
-        currentState = currentState == null ? State.MAIN : currentState.next();
+        currentState = currentState == null ? State.UPDATE : currentState.next();
 
         try {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);
@@ -50,6 +51,11 @@ public class MainApplication extends Application {
             AlertUtils.showMessageAndCloseProgram(e);
         }
 
+    }
+
+    public static void injectMainStage(Stage childStage) {
+        childStage.initOwner(mainStage);
+        childStage.setTitle(PROGRAM_NAME);
     }
 
     private enum State {

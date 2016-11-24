@@ -24,6 +24,13 @@ public class DataService extends Service<Map<String, TableData>> {
     public class LoadTask extends Task<Map<String, TableData>> {
         @Override
         protected Map<String, TableData> call() throws Exception {
+            updateProgress(0, 4);
+            Thread.sleep(500);
+            for (int i = 1; i < 5; i++) {
+                updateProgress(i, 4);
+                Thread.sleep(200);
+            }
+
             return null;
         }
     }

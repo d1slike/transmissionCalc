@@ -3,11 +3,11 @@ package ru.disdev.controller;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import ru.disdev.MainApplication;
 import ru.disdev.entity.TableData;
 import ru.disdev.loader.DataService;
 
-import java.awt.*;
 import java.util.Map;
 
 public class LoadController implements Controller {

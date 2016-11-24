@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.entity.Column;
+import ru.disdev.entity.input.InputData;
 import ru.disdev.entity.Result;
 
 public class MainController implements Controller {
@@ -27,11 +28,18 @@ public class MainController implements Controller {
     public JFXButton exportButton;
     @FXML
     private TableView<Result> resultTable;
+    private InputData lastSavedInputData;
 
     @Override
     @SuppressWarnings("unchecked")
     public void initialize() {
         resultTable.setItems(results);
+        newResultButton.setOnAction(event -> {
+            InputDataController controller =
+                    new InputDataController(lastSavedInputData, this::closeInputControllerHandler);
+            controller.initialize();
+            event.consume();
+        });
         FieldUtils.getFieldsListWithAnnotation(Result.class, Column.class)
                 .forEach(field -> {
                     field.setAccessible(true);
@@ -71,5 +79,12 @@ public class MainController implements Controller {
                     resultTable.getColumns().add(nextColumn);
                 });
 
+    }
+
+    private void closeInputControllerHandler(Result result, InputData inputData) {
+        if (result != null) {
+            results.add(result);
+        }
+        lastSavedInputData = inputData;
     }
 }
