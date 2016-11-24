@@ -11,7 +11,10 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -47,9 +50,8 @@ public class InputDataController implements Controller {
         if (inputData == null) {
             inputData = new InputData();
         }
-        Stage stage = new Stage();
+        Stage stage = MainApplication.newChildStage();
         stage.initModality(Modality.WINDOW_MODAL);
-        MainApplication.injectMainStage(stage);
         GridPane content = new GridPane();
         content.setPadding(new Insets(20));
         BorderPane root = new BorderPane(content);

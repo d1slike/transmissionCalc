@@ -1,4 +1,4 @@
-package ru.disdev.loader;
+package ru.disdev.service;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -7,7 +7,7 @@ import ru.disdev.entity.TableData;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class DataService extends Service<Map<String, TableData>> {
+public class TableDataService extends Service<Map<String, TableData>> {
 
     private Consumer<String> infoLabelUpdateCallback;
 

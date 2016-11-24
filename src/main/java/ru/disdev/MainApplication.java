@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import ru.disdev.utils.AlertUtils;
 
 import java.net.URL;
@@ -39,7 +38,9 @@ public class MainApplication extends Application {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);
             Pane pane = FXMLLoader.load(url);
             mainStage.hide();
-            mainStage.setScene(new Scene(pane));
+            Scene scene = new Scene(pane);
+            scene.getStylesheets().add(MainApplication.class.getResource("/css/main.css").toExternalForm());
+            mainStage.setScene(scene);
             mainStage.sizeToScene();
             mainStage.centerOnScreen();
             Consumer<Stage> stageConfigurationCallback = currentState.getStageConfigurationCallback();
@@ -53,9 +54,15 @@ public class MainApplication extends Application {
 
     }
 
-    public static void injectMainStage(Stage childStage) {
+    public static Stage newChildStage() {
+        Stage childStage = new Stage();
         childStage.initOwner(mainStage);
         childStage.setTitle(PROGRAM_NAME);
+        return childStage;
+    }
+
+    public static Stage getMainStage() {
+        return mainStage;
     }
 
     private enum State {

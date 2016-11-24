@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import ru.disdev.MainApplication;
 import ru.disdev.entity.TableData;
-import ru.disdev.loader.DataService;
+import ru.disdev.service.TableDataService;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ public class LoadController implements Controller {
 
     @Override
     public void initialize() {
-        DataService service = new DataService();
+        TableDataService service = new TableDataService();
         service.setOnSucceeded(event -> {
             Map<String, TableData> value = service.getValue();
             //TODO
