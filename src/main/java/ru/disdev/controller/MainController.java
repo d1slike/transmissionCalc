@@ -70,6 +70,6 @@ public class MainController implements Controller {
                     nextColumn.setResizable(false);
                     resultTable.getColumns().add(nextColumn);
                 });
-        results.add(new Result());
+
     }
 }
