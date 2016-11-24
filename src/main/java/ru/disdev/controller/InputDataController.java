@@ -11,10 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -54,6 +51,7 @@ public class InputDataController implements Controller {
         stage.initModality(Modality.WINDOW_MODAL);
         MainApplication.injectMainStage(stage);
         GridPane content = new GridPane();
+        content.setPadding(new Insets(20));
         BorderPane root = new BorderPane(content);
         root.setBottom(makeCalcButton(stage));
         mapContent(content);
@@ -123,6 +121,10 @@ public class InputDataController implements Controller {
         switch (annotation.type()) {
             case NUMBER:
                 textField.setTextFormatter(FieldValidatorUtils.getNumericTextFilter());
+                try {
+                    textField.setText(((Property<Number>) FieldUtils.readField(field, inputData)).getValue().toString());
+                } catch (Exception ignored) {
+                }
                 textField.textProperty().addListener((observable, oldValue, newValue) -> {
                     Double value = NumberUtils.parseDoubleORNull(newValue);
                     if (value == null) {

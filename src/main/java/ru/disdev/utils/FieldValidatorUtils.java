@@ -22,21 +22,14 @@ public class FieldValidatorUtils {
         return validLastChar && dotCheck ? change : null;
     };
 
-    private static ValidatorBase requiredFieldValidator;
-    private static TextFormatter<Object> numericTextFilter;
-
-    static {
-        requiredFieldValidator = new RequiredFieldValidator();
-        requiredFieldValidator.setMessage("Обязательно для заполнения");
-        numericTextFilter = new TextFormatter<>(NUMERIC_TEXT_VALIDATOR);
-    }
-
 
     public static ValidatorBase getRequiredFieldValidator() {
-        return requiredFieldValidator;
+        RequiredFieldValidator validator = new RequiredFieldValidator();
+        validator.setMessage("Обязательно для заполнения");
+        return validator;
     }
 
     public static TextFormatter<Object> getNumericTextFilter() {
-        return numericTextFilter;
+        return new TextFormatter<>(NUMERIC_TEXT_VALIDATOR);
     }
 }
