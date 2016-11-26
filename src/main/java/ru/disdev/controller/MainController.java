@@ -21,7 +21,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.MainApplication;
 import ru.disdev.entity.Column;
 import ru.disdev.entity.Result;
-import ru.disdev.entity.input.InputData;
 import ru.disdev.service.ExportResultService;
 import ru.disdev.service.ImportResultService;
 import ru.disdev.utils.PopupUtils;
@@ -50,8 +49,6 @@ public class MainController implements Controller {
     private final FileChooser fileChooser = new FileChooser();
 
     private ObservableList<Result> results = FXCollections.observableArrayList();
-    private InputData lastSavedInputData;
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -107,7 +104,7 @@ public class MainController implements Controller {
     private void onNewResultButtonClick(ActionEvent event) {
         Platform.runLater(() -> {
             InputDataController controller =
-                    new InputDataController(lastSavedInputData, this::closeInputControllerHandler);
+                    new InputDataController(result -> results.add(result));
             controller.initialize();
         });
         event.consume();
@@ -165,12 +162,5 @@ public class MainController implements Controller {
     private void updateControlStatus(boolean enable) {
         Stream.of(exportButton, importButton, newResultButton)
                 .forEach(jfxButton -> jfxButton.setDisable(!enable));
-    }
-
-    private void closeInputControllerHandler(Result result, InputData inputData) {
-        if (result != null) {
-            results.add(result);
-        }
-        lastSavedInputData = inputData;
     }
 }

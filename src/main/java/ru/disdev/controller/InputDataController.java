@@ -11,14 +11,15 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.MainApplication;
 import ru.disdev.entity.Result;
-import ru.disdev.entity.Type;
 import ru.disdev.entity.input.*;
 import ru.disdev.entity.input.conditional.Condition;
 import ru.disdev.entity.input.conditional.DependOn;
@@ -32,25 +33,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class InputDataController implements Controller {
 
-    private InputData inputData;
+    private static final int ELEMENTS_IN_COLUMN = 8;
+
+    private InputData inputData = new InputData();
     private List<JFXTextField> fields = new ArrayList<>();
     private Map<Integer, ElementsList> stateMap = new HashMap<>();
-    private final BiConsumer<Result, InputData> closeCallback;
+    private final Consumer<Result> closeCallback;
 
-    public InputDataController(InputData inputData, BiConsumer<Result, InputData> closeCallback) {
-        this.inputData = inputData;
+    public InputDataController(Consumer<Result> closeCallback) {
         this.closeCallback = closeCallback;
     }
 
     @Override
     public void initialize() {
-        if (inputData == null) {
-            inputData = new InputData();
-        }
         Stage stage = MainApplication.newChildStage();
         stage.initModality(Modality.WINDOW_MODAL);
         GridPane content = new GridPane();
@@ -72,10 +71,11 @@ public class InputDataController implements Controller {
     private Node makeCalcButton(Stage stage) {
         JFXButton calcButton = new JFXButton("РАССЧИТАТЬ");
         calcButton.setOnAction(event -> {
-            boolean checked = fields.stream().allMatch(JFXTextField::validate);
+            boolean checked = fields.stream()
+                    .allMatch(jfxTextField -> jfxTextField.getParent().isDisable() || jfxTextField.validate());
             if (checked) {
                 //TODO calc logic here
-                closeCallback.accept(new Result(), inputData);
+                closeCallback.accept(new Result());
                 fields.clear();
                 stateMap.forEach((integer, elementsList) -> elementsList.clear());
                 stateMap.clear();
@@ -91,7 +91,7 @@ public class InputDataController implements Controller {
     }
 
     private void mapContent(GridPane contentPane) {
-        int i = 0, j = 0;
+        int row = 0, column = 0;
         try {
             for (Field field : FieldUtils.getAllFields(InputData.class)) {
                 field.setAccessible(true);
@@ -104,9 +104,9 @@ public class InputDataController implements Controller {
                     nextElement = mapComboBox(field.getAnnotation(ComboBox.class), field);
                 }
                 if (nextElement != null) {
-                    if (i == 5) {
-                        j++;
-                        i = 0;
+                    if (row == ELEMENTS_IN_COLUMN) {
+                        column++;
+                        row = 0;
                     }
                     if (field.isAnnotationPresent(DependOn.class)) {
                         DependOn dependOn = field.getAnnotation(DependOn.class);
@@ -122,7 +122,7 @@ public class InputDataController implements Controller {
                         }
                     }
                     nextElement.setPadding(new Insets(15));
-                    contentPane.add(nextElement, j, i++);
+                    contentPane.add(nextElement, column, row++);
                 }
             }
         } catch (Exception ex) {
@@ -131,21 +131,20 @@ public class InputDataController implements Controller {
     }
 
     @SuppressWarnings("unchecked")
-    private VBox mapTextField(TextField annotation, Field field) throws IllegalAccessException {
-        VBox box = new VBox();
+    private HBox mapTextField(TextField annotation, Field field) throws IllegalAccessException {
+        HBox box = new HBox();
         JFXTextField textField = new JFXTextField();
         textField.setPromptText(annotation.name());
         textField.setTooltip(new Tooltip(annotation.description()));
         textField.setAlignment(Pos.BOTTOM_LEFT);
-        Label label = new Label(annotation.name());
-        label.setAlignment(Pos.CENTER_RIGHT);
-        label.setFont(Font.font(12));
-        box.getChildren().addAll(label, textField);
+        textField.setStyle("-fx-label-float:true;");
+        box.getChildren().add(textField);
         if (annotation.isRequired()) {
             textField.setValidators(FieldValidatorUtils.getRequiredFieldValidator());
-            textField.focusedProperty().addListener((o, oldVal, newVal) -> {
-                if (!newVal) textField.validate();
-            });
+            textField.textProperty().addListener((observable, oldValue, newValue) -> textField.validate());
+            /*textField.focusedProperty().addListener((o, oldVal, newVal) -> {
+                if (!newVal && !textField.getParent().isDisable()) textField.validate();
+            });*/
         }
         switch (annotation.type()) {
             case NUMBER:
@@ -203,11 +202,11 @@ public class InputDataController implements Controller {
     private HBox mapComboBox(ComboBox comboBox, Field field) throws IllegalAccessException {
         HBox box = new HBox();
         JFXComboBox newBox = null;
-        if (comboBox.enumClass().equals(Type.class)) {
-            JFXComboBox<Type> jfxComboBox = new JFXComboBox<>();
-            jfxComboBox.getItems().addAll(Type.values());
-            jfxComboBox.valueProperty().bindBidirectional((Property<Type>) FieldUtils.readField(field, inputData));
-            newBox = jfxComboBox;
+        Class<?> aClass = comboBox.enumClass();
+        if (aClass.isEnum()) {
+            newBox = new JFXComboBox();
+            newBox.getItems().addAll(aClass.getEnumConstants());
+            newBox.valueProperty().bindBidirectional((Property) FieldUtils.readField(field, inputData));
         }
         if (newBox != null) {
             newBox.setValue(newBox.getItems().get(0));
@@ -220,7 +219,7 @@ public class InputDataController implements Controller {
             label.setPadding(new Insets(0, 10, 0, 0));
             box.getChildren().addAll(label, newBox);
         }
-
         return box;
     }
+
 }

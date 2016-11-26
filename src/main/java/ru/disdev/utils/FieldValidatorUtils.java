@@ -12,8 +12,7 @@ public class FieldValidatorUtils {
         int length = content.length();
         if (length == 0) {
             return change;
-        }
-        else if (length > 9) {
+        } else if (length > 12) {
             return null;
         }
         char lastChar = content.charAt(length - 1);
@@ -26,6 +25,7 @@ public class FieldValidatorUtils {
     public static ValidatorBase getRequiredFieldValidator() {
         RequiredFieldValidator validator = new RequiredFieldValidator();
         validator.setMessage("Обязательно для заполнения");
+        validator.setErrorStyleClass("error");
         return validator;
     }
 

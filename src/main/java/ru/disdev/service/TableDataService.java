@@ -13,26 +13,23 @@ public class TableDataService extends Service<Map<String, TableData>> {
 
     @Override
     protected Task<Map<String, TableData>> createTask() {
-        return new LoadTask();
+        return new Task<Map<String, TableData>>() {
+            @Override
+            protected Map<String, TableData> call() throws Exception {
+                updateProgress(0, 4);
+                Thread.sleep(500);
+                for (int i = 1; i < 5; i++) {
+                    updateProgress(i, 4);
+                    Thread.sleep(200);
+                }
+                return null;
+            }
+        };
     }
 
     public void setInfoLabelUpdateCallback(Consumer<String> infoLabelUpdateCallback) {
         this.infoLabelUpdateCallback = infoLabelUpdateCallback;
     }
 
-
-    public class LoadTask extends Task<Map<String, TableData>> {
-        @Override
-        protected Map<String, TableData> call() throws Exception {
-            updateProgress(0, 4);
-            Thread.sleep(500);
-            for (int i = 1; i < 5; i++) {
-                updateProgress(i, 4);
-                Thread.sleep(200);
-            }
-
-            return null;
-        }
-    }
 }
 
