@@ -11,33 +11,34 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.MainApplication;
 import ru.disdev.entity.Result;
 import ru.disdev.entity.Type;
-import ru.disdev.entity.input.CheckBox;
-import ru.disdev.entity.input.ComboBox;
-import ru.disdev.entity.input.InputData;
-import ru.disdev.entity.input.TextField;
+import ru.disdev.entity.input.*;
+import ru.disdev.entity.input.conditional.Condition;
+import ru.disdev.entity.input.conditional.DependOn;
+import ru.disdev.entity.input.conditional.ElementsList;
 import ru.disdev.utils.AlertUtils;
 import ru.disdev.utils.FieldValidatorUtils;
 import ru.disdev.utils.NumberUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class InputDataController implements Controller {
 
     private InputData inputData;
     private List<JFXTextField> fields = new ArrayList<>();
+    private Map<Integer, ElementsList> stateMap = new HashMap<>();
     private final BiConsumer<Result, InputData> closeCallback;
 
     public InputDataController(InputData inputData, BiConsumer<Result, InputData> closeCallback) {
@@ -53,6 +54,7 @@ public class InputDataController implements Controller {
         Stage stage = MainApplication.newChildStage();
         stage.initModality(Modality.WINDOW_MODAL);
         GridPane content = new GridPane();
+        content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(20));
         BorderPane root = new BorderPane(content);
         root.setBottom(makeCalcButton(stage));
@@ -60,6 +62,10 @@ public class InputDataController implements Controller {
         stage.setScene(new Scene(root));
         stage.sizeToScene();
         stage.centerOnScreen();
+        stateMap.forEach((state, list) -> {
+            list.getDisable().forEach(node -> node.setDisable(false));
+            list.getEnable().forEach(node -> node.setDisable(true));
+        });
         stage.showAndWait();
     }
 
@@ -71,6 +77,8 @@ public class InputDataController implements Controller {
                 //TODO calc logic here
                 closeCallback.accept(new Result(), inputData);
                 fields.clear();
+                stateMap.forEach((integer, elementsList) -> elementsList.clear());
+                stateMap.clear();
                 stage.close();
             }
             event.consume();
@@ -100,6 +108,19 @@ public class InputDataController implements Controller {
                         j++;
                         i = 0;
                     }
+                    if (field.isAnnotationPresent(DependOn.class)) {
+                        DependOn dependOn = field.getAnnotation(DependOn.class);
+                        ElementsList elementsList = stateMap.get(dependOn.id());
+                        if (elementsList == null) {
+                            elementsList = new ElementsList();
+                            stateMap.put(dependOn.id(), elementsList);
+                        }
+                        if (dependOn.showOn() == CheckBoxState.CHECKED) {
+                            elementsList.addToEnable(nextElement);
+                        } else {
+                            elementsList.addToDisable(nextElement);
+                        }
+                    }
                     nextElement.setPadding(new Insets(15));
                     contentPane.add(nextElement, j, i++);
                 }
@@ -110,10 +131,16 @@ public class InputDataController implements Controller {
     }
 
     @SuppressWarnings("unchecked")
-    private JFXTextField mapTextField(TextField annotation, Field field) throws IllegalAccessException {
+    private VBox mapTextField(TextField annotation, Field field) throws IllegalAccessException {
+        VBox box = new VBox();
         JFXTextField textField = new JFXTextField();
         textField.setPromptText(annotation.name());
         textField.setTooltip(new Tooltip(annotation.description()));
+        textField.setAlignment(Pos.BOTTOM_LEFT);
+        Label label = new Label(annotation.name());
+        label.setAlignment(Pos.CENTER_RIGHT);
+        label.setFont(Font.font(12));
+        box.getChildren().addAll(label, textField);
         if (annotation.isRequired()) {
             textField.setValidators(FieldValidatorUtils.getRequiredFieldValidator());
             textField.focusedProperty().addListener((o, oldVal, newVal) -> {
@@ -128,18 +155,16 @@ public class InputDataController implements Controller {
                 } catch (Exception ignored) {
                 }
                 textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    Double value = NumberUtils.parseDoubleORNull(newValue);
-                    if (value == null) {
-                        return;
-                    }
-                    Property<Number> numberProperty = null;
-                    try {
-                        numberProperty = (Property<Number>) FieldUtils.readField(field, inputData);
-                    } catch (Exception ignored) {
-                    }
-                    if (numberProperty != null) {
-                        numberProperty.setValue(value);
-                    }
+                    NumberUtils.parseDouble(newValue).ifPresent(value -> {
+                        Property<Number> numberProperty = null;
+                        try {
+                            numberProperty = (Property<Number>) FieldUtils.readField(field, inputData);
+                        } catch (Exception ignored) {
+                        }
+                        if (numberProperty != null) {
+                            numberProperty.setValue(value);
+                        }
+                    });
                 });
                 break;
             case STRING:
@@ -147,9 +172,8 @@ public class InputDataController implements Controller {
                         .bindBidirectional((Property<String>) FieldUtils.readField(field, inputData));
                 break;
         }
-
         fields.add(textField);
-        return textField;
+        return box;
     }
 
     @SuppressWarnings("unchecked")
@@ -158,6 +182,20 @@ public class InputDataController implements Controller {
         box.setText(checkBox.name());
         box.setTooltip(new Tooltip(checkBox.description()));
         box.selectedProperty().bindBidirectional((Property<Boolean>) FieldUtils.readField(field, inputData));
+        if (field.isAnnotationPresent(Condition.class)) {
+            Condition condition = field.getAnnotation(Condition.class);
+            if (!stateMap.containsKey(condition.value())) {
+                stateMap.put(condition.value(), new ElementsList());
+            }
+            box.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!stateMap.containsKey(condition.value())) {
+                    return;
+                }
+                ElementsList elementsList = stateMap.get(condition.value());
+                elementsList.getEnable().forEach(node -> node.setDisable(!newValue));
+                elementsList.getDisable().forEach(node -> node.setDisable(newValue));
+            });
+        }
         return box;
     }
 
@@ -178,6 +216,7 @@ public class InputDataController implements Controller {
             Label label = new Label(comboBox.name());
             label.setLabelFor(newBox);
             label.setTooltip(tooltip);
+            label.setAlignment(Pos.CENTER_LEFT);
             label.setPadding(new Insets(0, 10, 0, 0));
             box.getChildren().addAll(label, newBox);
         }

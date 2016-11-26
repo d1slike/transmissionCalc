@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import ru.disdev.utils.AlertUtils;
@@ -17,6 +18,7 @@ public class MainApplication extends Application {
 
     private static Stage mainStage;
     private static State currentState;
+    private static Image icon;
 
     public static void main(String[] args) {
         launch(MainApplication.class, args);
@@ -27,6 +29,8 @@ public class MainApplication extends Application {
         mainStage = primaryStage;
         //mainStage.initStyle(StageStyle.UNDECORATED); //TODO заменить на свои кнопки
         mainStage.setTitle(PROGRAM_NAME);
+        icon = new Image(MainApplication.class.getResource("/icon.png").toExternalForm());
+        primaryStage.getIcons().add(icon);
         nextState();
     }
 
@@ -58,6 +62,7 @@ public class MainApplication extends Application {
         Stage childStage = new Stage();
         childStage.initOwner(mainStage);
         childStage.setTitle(PROGRAM_NAME);
+        childStage.getIcons().add(icon);
         return childStage;
     }
 

@@ -1,7 +1,6 @@
 package ru.disdev.controller;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXSpinner;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -11,9 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,10 +23,11 @@ import ru.disdev.entity.Column;
 import ru.disdev.entity.Result;
 import ru.disdev.entity.input.InputData;
 import ru.disdev.service.ExportResultService;
-import ru.disdev.utils.DaemonThreadPool;
+import ru.disdev.service.ImportResultService;
+import ru.disdev.utils.PopupUtils;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class MainController implements Controller {
@@ -108,9 +105,11 @@ public class MainController implements Controller {
     }
 
     private void onNewResultButtonClick(ActionEvent event) {
-        InputDataController controller =
-                new InputDataController(lastSavedInputData, this::closeInputControllerHandler);
-        controller.initialize();
+        Platform.runLater(() -> {
+            InputDataController controller =
+                    new InputDataController(lastSavedInputData, this::closeInputControllerHandler);
+            controller.initialize();
+        });
         event.consume();
     }
 
@@ -119,38 +118,51 @@ public class MainController implements Controller {
         File directory = directoryChooser.showDialog(MainApplication.getMainStage());
         if (directory != null) {
             ExportResultService service = new ExportResultService(results, directory);
+            service.setOnRunning(e -> spinner.setVisible(true));
             service.setOnSucceeded(e -> {
                 updateControlStatus(true);
-                showPopup(new Label("Успешно экспортировано"), exportButton);
+                spinner.setVisible(false);
+                PopupUtils.infoPoup(root, resultTable, "Данные успешно экспортированы", 3);
             });
             service.setOnFailed(e -> {
                 updateControlStatus(true);
-                showPopup(new Label("Возникла ошибка при экспорте"), exportButton);
+                spinner.setVisible(false);
+                PopupUtils.warningPopup(root, resultTable, "Ошибка при экспорте данных", 3);
             });
             service.start();
         } else {
             updateControlStatus(true);
-            showPopup(new Label("Не указана директория для экспорта"), exportButton);
         }
         event.consume();
-        //TODO кастомизировать, вынести в константы
-    }
-
-    private void showPopup(Label text, Node source) {
-        text.setPadding(new Insets(20));
-        text.setAlignment(Pos.CENTER);
-        JFXPopup popup = new JFXPopup(root, text);
-        popup.setSource(source);
-        popup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.RIGHT);
-        DaemonThreadPool.schedule(() -> Platform.runLater(popup::close), 1, TimeUnit.SECONDS);
     }
 
     private void onImportButtonClick(ActionEvent event) {
-
+        updateControlStatus(false);
+        File source = fileChooser.showOpenDialog(MainApplication.getMainStage());
+        if (source != null) {
+            ImportResultService service = new ImportResultService(source);
+            service.setOnRunning(e -> spinner.setVisible(true));
+            service.setOnFailed(e -> {
+                updateControlStatus(true);
+                spinner.setVisible(false);
+                PopupUtils.warningPopup(root, resultTable, "Ошибка при импорте данных", 3);
+            });
+            service.setOnSucceeded(e -> {
+                List<Result> value = service.getValue();
+                results.clear();
+                results.addAll(value);
+                updateControlStatus(true);
+                spinner.setVisible(false);
+                PopupUtils.infoPoup(root, resultTable, "Данные успешно импортированы", 3);
+            });
+            service.start();
+        } else {
+            updateControlStatus(true);
+        }
+        event.consume();
     }
 
     private void updateControlStatus(boolean enable) {
-        spinner.setVisible(!enable);
         Stream.of(exportButton, importButton, newResultButton)
                 .forEach(jfxButton -> jfxButton.setDisable(!enable));
     }

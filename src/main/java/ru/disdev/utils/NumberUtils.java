@@ -1,12 +1,15 @@
 package ru.disdev.utils;
 
+import java.util.Optional;
+
 public class NumberUtils {
-    public static Double parseDoubleORNull(String value) {
+    public static Optional<Double> parseDouble(String value) {
+        Double val = null;
         try {
-            return Double.parseDouble(value);
+            val = Double.parseDouble(value);
         } catch (Exception ignored) {
 
         }
-        return null;
+        return Optional.ofNullable(val);
     }
 }
