@@ -7,28 +7,41 @@ import ru.disdev.entity.TableData;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class TableDataService extends Service<Map<String, TableData>> {
-
-    private Consumer<String> infoLabelUpdateCallback;
+public class TableDataService extends Service<Void> {
 
     @Override
-    protected Task<Map<String, TableData>> createTask() {
-        return new Task<Map<String, TableData>>() {
+    protected Task<Void> createTask() {
+        return new Task<Void>() {
             @Override
-            protected Map<String, TableData> call() throws Exception {
+            protected Void call() throws Exception {
                 updateProgress(0, 4);
-                Thread.sleep(500);
-                for (int i = 1; i < 5; i++) {
-                    updateProgress(i, 4);
-                    Thread.sleep(200);
-                }
+                loadFirst();
+                updateProgress(1, 4);
+                loadSecond();
+                updateProgress(2, 4);
+                loadThird();
+                updateProgress(3, 4);
+                loadLast();
+                updateProgress(4, 4);
                 return null;
             }
         };
     }
 
-    public void setInfoLabelUpdateCallback(Consumer<String> infoLabelUpdateCallback) {
-        this.infoLabelUpdateCallback = infoLabelUpdateCallback;
+    private void loadFirst() {
+
+    }
+
+    private void loadSecond() {
+
+    }
+
+    private void loadThird() {
+
+    }
+
+    private void loadLast() {
+
     }
 
 }
