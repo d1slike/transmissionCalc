@@ -1,6 +1,5 @@
 .root {
-    -fx-font-family: Roboto;
-    src: "/resources/roboto/Roboto-Regular.ttf";
+    -fx-background-color: WHITE;
 }
 
 /* Burgers Demo */

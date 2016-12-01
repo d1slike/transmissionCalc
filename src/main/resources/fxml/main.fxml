@@ -13,21 +13,20 @@
    <right>
       <VBox alignment="CENTER" prefHeight="574.0" prefWidth="140.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton fx:id="newResultButton" prefHeight="39.0" prefWidth="378.0" ripplerFill="TRANSPARENT"
-                       text="Новый">
+             <JFXButton fx:id="newResultButton" prefHeight="39.0" prefWidth="378.0" ripplerFill="TRANSPARENT">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
                <VBox.margin>
-                  <Insets/>
+                   <Insets/>
                </VBox.margin>
             </JFXButton>
-            <JFXButton fx:id="importButton" prefHeight="39.0" prefWidth="211.0" text="Загрузить">
+             <JFXButton fx:id="importButton" prefHeight="39.0" prefWidth="211.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton fx:id="exportButton" prefHeight="39.0" prefWidth="337.0" text="Выгрузить">
+             <JFXButton fx:id="exportButton" prefHeight="39.0" prefWidth="337.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -38,14 +37,14 @@
    <center>
       <ScrollPane fx:id="scrollPane" prefHeight="461.0" prefWidth="715.0" BorderPane.alignment="CENTER">
          <content>
-            <TableView fx:id="resultTable"/>
+             <TableView fx:id="resultTable"/>
          </content>
       </ScrollPane>
    </center>
    <bottom>
       <JFXSpinner fx:id="spinner" visible="false" BorderPane.alignment="CENTER">
          <BorderPane.margin>
-            <Insets bottom="10.0" top="10.0"/>
+             <Insets bottom="10.0" top="10.0"/>
          </BorderPane.margin>
       </JFXSpinner>
    </bottom>

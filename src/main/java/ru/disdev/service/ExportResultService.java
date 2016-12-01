@@ -30,7 +30,7 @@ public class ExportResultService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
                 File target = new File(file.getAbsolutePath() + "/results.csv");
-                try (CSVWriter writer = new CSVWriter(getWin1251FileWriter(file), ';')) {
+                try (CSVWriter writer = new CSVWriter(getWin1251FileWriter(target), ';')) {
                     writer.writeNext(makeTableHeader());
                     resultsToExport.stream()
                             .map(ExportResultService.this::toCSVRow)

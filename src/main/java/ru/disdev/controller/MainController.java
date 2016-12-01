@@ -2,6 +2,7 @@ package ru.disdev.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
+import de.jensd.fx.fontawesome.Icon;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -56,8 +57,15 @@ public class MainController implements Controller {
     public void initialize() {
         resultTable.setItems(results);
         newResultButton.setOnAction(this::onNewResultButtonClick);
+        newResultButton.setGraphic(new Icon("PLUS_CIRCLE"));
+        newResultButton.setText("");
+        newResultButton.setGraphicTextGap(30);
         exportButton.setOnAction(this::onExportButtonClick);
+        exportButton.setGraphic(new Icon("UPLOAD"));
+        exportButton.setText("");
         importButton.setOnAction(this::onImportButtonClick);
+        importButton.setGraphic(new Icon("DOWNLOAD"));
+        importButton.setText("");
         directoryChooser.setTitle("Директория для экспорта");
         fileChooser.setTitle("Файл для импорта");
         fileChooser.setSelectedExtensionFilter(CSV_FILER);
@@ -169,7 +177,7 @@ public class MainController implements Controller {
             service.setOnFailed(e -> {
                 updateControlStatus(true);
                 spinner.setVisible(false);
-                PopupUtils.warningPopup(root, resultTable, "Ошибка при импорте данных", 3);
+                PopupUtils.warningPopup(root, spinner, "Ошибка при импорте данных", 3);
             });
             service.setOnSucceeded(e -> {
                 List<Result> value = service.getValue();
@@ -177,7 +185,7 @@ public class MainController implements Controller {
                 results.addAll(value);
                 updateControlStatus(true);
                 spinner.setVisible(false);
-                PopupUtils.infoPoup(root, resultTable, "Данные успешно импортированы", 3);
+                PopupUtils.infoPoup(root, spinner, "Данные успешно импортированы", 3);
             });
             service.start();
         } else {

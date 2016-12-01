@@ -6,6 +6,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.entity.Column;
+import ru.disdev.entity.Enum;
 import ru.disdev.entity.Result;
 import ru.disdev.entity.Type;
 import ru.disdev.utils.NumberUtils;
@@ -44,9 +45,21 @@ public class ImportResultService extends Service<List<Result>> {
                                     Field field = fields[i];
                                     field.setAccessible(true);
                                     Column column = field.getAnnotation(Column.class);
-                                    Object property;
+                                    Object property = null;
                                     if (column.type() == Type.NUMBER) {
                                         property = NumberUtils.parseDouble(line[i]).orElse(0.);
+                                    } else if (column.type() == Type.BOOLEAN) {
+                                        property = Boolean.parseBoolean(line[i]);
+                                    } else if (column.type() == Type.OBJECT && field.isAnnotationPresent(Enum.class)) {
+                                        Class enumClass = field.getAnnotation(Enum.class).value();
+                                        if (enumClass.isEnum()) {
+                                            for (Object o : enumClass.getEnumConstants()) {
+                                                if (o.toString().equals(line[i])) {
+                                                    property = o;
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     } else {
                                         property = line[i];
                                     }

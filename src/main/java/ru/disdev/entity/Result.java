@@ -5,16 +5,20 @@ import ru.disdev.entity.input.enums.*;
 
 public class Result {
     @Column(name = "Материал", type = Type.OBJECT, description = "Материал шестерни и колеса")
+    @Enum(Material.class)
     private ObjectProperty<Material> material = new SimpleObjectProperty<>();
     @Column(name = "Вид колеса", type = Type.OBJECT, description = "Вид колеса")
+    @Enum(CircleType.class)
     private ObjectProperty<CircleType> circleType = new SimpleObjectProperty<>();
     @Column(name = "Ширина венца", type = Type.NUMBER, description = "Ширина венца")
     private DoubleProperty bw = new SimpleDoubleProperty();
     @Column(name = "Межосевое расстояние", type = Type.NUMBER, description = "Межосевое расстояние")
     private DoubleProperty aw = new SimpleDoubleProperty();
     @Column(name = "Прочность зубьев", type = Type.OBJECT, description = "Прочность поверхности зубьев")
+    @Enum(StrengthTeeth.class)
     private ObjectProperty<StrengthTeeth> strengthTeeth = new SimpleObjectProperty<>();
     @Column(name = "Расположение вала", type = Type.OBJECT, description = "Расположение вала")
+    @Enum(ShaftPosition.class)
     private ObjectProperty<ShaftPosition> shaftPosition = new SimpleObjectProperty<>();
     @Column(name = "Расстояние межуду опорами вала", type = Type.NUMBER, description = "Расстояние межуду опорами вала")
     private DoubleProperty L = new SimpleDoubleProperty();
@@ -23,10 +27,11 @@ public class Result {
     @Column(name = "Крутящиц момент", type = Type.NUMBER, description = "Крутящиц момент")
     private DoubleProperty t1 = new SimpleDoubleProperty();
     @Column(name = "Теормообработка", type = Type.OBJECT, description = "Теормообработка")
+    @Enum(Curing.class)
     private ObjectProperty<Curing> curing = new SimpleObjectProperty<>();
     @Column(name = "Толщина упроченного слоя", type = Type.OBJECT, description = "Толщина упроченного слоя")
+    @Enum(SymplisticLayer.class)
     private ObjectProperty<SymplisticLayer> symplisticLayer = new SimpleObjectProperty<>();
-
     @Column(name = "Ступенчатая нагрузка", type = Type.BOOLEAN, description = "Ступенчатая нагрузка")
     private BooleanProperty stepLoad = new SimpleBooleanProperty();
     @Column(name = "Частота вращения", type = Type.NUMBER, description = "Частота вращения")
@@ -44,6 +49,7 @@ public class Result {
     @Column(name = "Эквивалетное число зубьев", type = Type.NUMBER, description = "Эквивалетное число зубьев")
     private DoubleProperty z = new SimpleDoubleProperty();
     @Column(name = "Тип нагрузки", type = Type.OBJECT, description = "Тип нагрузки")
+    @Enum(LoadType.class)
     private ObjectProperty<LoadType> loadTypeForSigm = new SimpleObjectProperty<>();
     @Column(name = "Коэффициент mf", type = Type.NUMBER, description = "Коэффициент mf")
     private DoubleProperty mF = new SimpleDoubleProperty();
@@ -52,6 +58,7 @@ public class Result {
     @Column(name = "PhiBa", type = Type.NUMBER, description = "OТношение ширины венца к межосевому расстоянию")
     private DoubleProperty phiBa = new SimpleDoubleProperty();
     @Column(name = "Зацепление", description = "Тип зацепеления", type = Type.OBJECT)
+    @Enum(GearingType.class)
     private ObjectProperty<GearingType> gearingType = new SimpleObjectProperty<>();
 
 

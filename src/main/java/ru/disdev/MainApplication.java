@@ -3,6 +3,7 @@ package ru.disdev;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -19,6 +20,7 @@ public class MainApplication extends Application {
     private static Stage mainStage;
     private static State currentState;
     private static Image icon;
+    private static String style;
 
     public static void main(String[] args) {
         launch(MainApplication.class, args);
@@ -31,19 +33,18 @@ public class MainApplication extends Application {
         mainStage.setTitle(PROGRAM_NAME);
         icon = new Image(MainApplication.class.getResource("/icon.png").toExternalForm());
         primaryStage.getIcons().add(icon);
+        style = MainApplication.class.getResource("/css/main.css").toExternalForm();
         nextState();
     }
 
     public static void nextState() {
-
         currentState = currentState == null ? State.UPDATE : currentState.next();
-
         try {
             URL url = MainApplication.class.getResource("/fxml/" + currentState.fxmlName);
             Pane pane = FXMLLoader.load(url);
             mainStage.hide();
             Scene scene = new Scene(pane);
-            scene.getStylesheets().add(MainApplication.class.getResource("/css/main.css").toExternalForm());
+            scene.getStylesheets().add(style);
             mainStage.setScene(scene);
             mainStage.sizeToScene();
             mainStage.centerOnScreen();
@@ -64,6 +65,12 @@ public class MainApplication extends Application {
         childStage.setTitle(PROGRAM_NAME);
         childStage.getIcons().add(icon);
         return childStage;
+    }
+
+    public static Scene newScene(Parent root) {
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(style);
+        return scene;
     }
 
     public static Stage getMainStage() {

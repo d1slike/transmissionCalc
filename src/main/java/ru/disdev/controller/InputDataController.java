@@ -8,7 +8,6 @@ import javafx.beans.property.Property;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
@@ -63,7 +62,7 @@ public class InputDataController implements Controller {
         BorderPane root = new BorderPane(content);
         root.setBottom(makeCalcButton(stage));
         mapContent(content);
-        stage.setScene(new Scene(root));
+        stage.setScene(MainApplication.newScene(root));
         stage.sizeToScene();
         stage.centerOnScreen();
         stateMap.forEach((state, list) -> {
