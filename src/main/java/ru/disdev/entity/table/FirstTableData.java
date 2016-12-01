@@ -1,19 +1,19 @@
 package ru.disdev.entity.table;
 
 public class FirstTableData {
-    private final double Khl;
-    private final double Kfl;
+    private final double Khb;
+    private final double Kfb;
 
-    public FirstTableData(double khl, double kfl) {
-        Khl = khl;
-        Kfl = kfl;
+    public FirstTableData(double khb, double kfb) {
+        Khb = khb;
+        Kfb = kfb;
     }
 
-    public double getKhl() {
-        return Khl;
+    public double getKhb() {
+        return Khb;
     }
 
-    public double getKfl() {
-        return Kfl;
+    public double getKfb() {
+        return Kfb;
     }
 }

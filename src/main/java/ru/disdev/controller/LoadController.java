@@ -1,14 +1,12 @@
 package ru.disdev.controller;
 
 import com.jfoenix.controls.JFXProgressBar;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import ru.disdev.MainApplication;
-import ru.disdev.entity.TableData;
 import ru.disdev.service.TableDataService;
+import ru.disdev.utils.AlertUtils;
 
-import java.util.Map;
 
 public class LoadController implements Controller {
 
@@ -22,12 +20,8 @@ public class LoadController implements Controller {
     @Override
     public void initialize() {
         TableDataService service = new TableDataService();
-        service.setOnSucceeded(event -> {
-            Map<String, TableData> value = service.getValue();
-            //TODO
-            MainApplication.nextState();
-        });
-        service.setInfoLabelUpdateCallback(message -> Platform.runLater(() -> infoLabel.setText(message)));
+        service.setOnSucceeded(event -> MainApplication.nextState());
+        service.setOnFailed(event -> AlertUtils.showMessageAndCloseProgram((Exception) event.getSource().getException()));
         progressBar.progressProperty().bind(service.progressProperty());
         infoLabel.setText(INITIAL_MESSAGE);
         service.start();

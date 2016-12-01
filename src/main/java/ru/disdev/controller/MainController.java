@@ -3,6 +3,8 @@ package ru.disdev.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -10,10 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -33,7 +32,9 @@ public class MainController implements Controller {
 
     private static final FileChooser.ExtensionFilter CSV_FILER = new FileChooser.ExtensionFilter("CSV file", "*.csv");
     @FXML
-    public BorderPane root;
+    private BorderPane root;
+    @FXML
+    private ScrollPane scrollPane;
     @FXML
     private JFXButton newResultButton;
     @FXML
@@ -90,6 +91,32 @@ public class MainController implements Controller {
                             nextColumn = column;
                             break;
                         }
+                        case OBJECT: {
+                            TableColumn<Result, String> column = new TableColumn<>();
+                            column.setCellValueFactory(param -> {
+                                try {
+                                    ObjectProperty<Object> o = (ObjectProperty<Object>) FieldUtils.readField(field, param.getValue());
+                                    return new SimpleStringProperty(o.getValue().toString());
+                                } catch (IllegalAccessException ignored) {
+                                }
+                                return new SimpleStringProperty("bad data");
+                            });
+                            nextColumn = column;
+                            break;
+                        }
+                        case BOOLEAN: {
+                            TableColumn<Result, String> column = new TableColumn<>();
+                            column.setCellValueFactory(param -> {
+                                try {
+                                    Property<Boolean> o = (Property<Boolean>) FieldUtils.readField(field, param.getValue());
+                                    return new SimpleStringProperty(o.getValue() ? "Да" : "Нет");
+                                } catch (IllegalAccessException ignored) {
+                                }
+                                return new SimpleStringProperty("bad data");
+                            });
+                            nextColumn = column;
+                            break;
+                        }
                     }
                     Label label = new Label(annotation.name());
                     Tooltip tooltip = new Tooltip(annotation.description());
@@ -119,12 +146,12 @@ public class MainController implements Controller {
             service.setOnSucceeded(e -> {
                 updateControlStatus(true);
                 spinner.setVisible(false);
-                PopupUtils.infoPoup(root, resultTable, "Данные успешно экспортированы", 3);
+                PopupUtils.infoPoup(root, spinner, "Данные успешно экспортированы", 3);
             });
             service.setOnFailed(e -> {
                 updateControlStatus(true);
                 spinner.setVisible(false);
-                PopupUtils.warningPopup(root, resultTable, "Ошибка при экспорте данных", 3);
+                PopupUtils.warningPopup(root, spinner, "Ошибка при экспорте данных", 3);
             });
             service.start();
         } else {

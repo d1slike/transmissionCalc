@@ -19,11 +19,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.MainApplication;
+import ru.disdev.calculator.Calculator;
 import ru.disdev.entity.Result;
 import ru.disdev.entity.input.*;
 import ru.disdev.entity.input.conditional.Condition;
 import ru.disdev.entity.input.conditional.DependOn;
 import ru.disdev.entity.input.conditional.ElementsList;
+import ru.disdev.entity.input.enums.Valid;
 import ru.disdev.utils.AlertUtils;
 import ru.disdev.utils.FieldValidatorUtils;
 import ru.disdev.utils.NumberUtils;
@@ -34,6 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static ru.disdev.utils.FieldValidatorUtils.getRangeValidator;
+import static ru.disdev.utils.FieldValidatorUtils.getRequiredFieldValidator;
 
 public class InputDataController implements Controller {
 
@@ -74,12 +79,19 @@ public class InputDataController implements Controller {
             boolean checked = fields.stream()
                     .allMatch(jfxTextField -> jfxTextField.getParent().isDisable() || jfxTextField.validate());
             if (checked) {
-                //TODO calc logic here
-                closeCallback.accept(new Result());
-                fields.clear();
-                stateMap.forEach((integer, elementsList) -> elementsList.clear());
-                stateMap.clear();
-                stage.close();
+                Result result = null;
+                try {
+                    result = Calculator.calc(inputData);
+                } catch (Exception e) {
+                    AlertUtils.showMessageAndCloseProgram(e);
+                }
+                if (result != null) {
+                    closeCallback.accept(result);
+                    fields.clear();
+                    stateMap.forEach((integer, elementsList) -> elementsList.clear());
+                    stateMap.clear();
+                    stage.close();
+                }
             }
             event.consume();
         });
@@ -140,12 +152,13 @@ public class InputDataController implements Controller {
         textField.setStyle("-fx-label-float:true;");
         box.getChildren().add(textField);
         if (annotation.isRequired()) {
-            textField.setValidators(FieldValidatorUtils.getRequiredFieldValidator());
-            textField.textProperty().addListener((observable, oldValue, newValue) -> textField.validate());
-            /*textField.focusedProperty().addListener((o, oldVal, newVal) -> {
-                if (!newVal && !textField.getParent().isDisable()) textField.validate();
-            });*/
+            textField.setValidators(getRequiredFieldValidator());
         }
+        if (field.isAnnotationPresent(Valid.class)) {
+            Valid valid = field.getAnnotation(Valid.class);
+            textField.getValidators().add(getRangeValidator(valid.min(), valid.max()));
+        }
+        textField.textProperty().addListener((observable, oldValue, newValue) -> textField.validate());
         switch (annotation.type()) {
             case NUMBER:
                 textField.setTextFormatter(FieldValidatorUtils.getNumericTextFilter());

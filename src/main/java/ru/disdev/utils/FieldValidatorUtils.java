@@ -29,6 +29,13 @@ public class FieldValidatorUtils {
         return validator;
     }
 
+    public static ValidatorBase getRangeValidator(double min, double max) {
+        ValidatorBase validatorBase = new RangeFieldValidator(min, max);
+        validatorBase.setMessage("Допустимые значения:[" + min + "..." + max + "]");
+        validatorBase.setErrorStyleClass("error");
+        return validatorBase;
+    }
+
     public static TextFormatter<Object> getNumericTextFilter() {
         return new TextFormatter<>(NUMERIC_TEXT_VALIDATOR);
     }

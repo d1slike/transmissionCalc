@@ -9,9 +9,10 @@ import ru.disdev.entity.Column;
 import ru.disdev.entity.Result;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.disdev.utils.IOUtils.getWin1251FileWriter;
 
 public class ExportResultService extends Service<Void> {
 
@@ -29,7 +30,7 @@ public class ExportResultService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
                 File target = new File(file.getAbsolutePath() + "/results.csv");
-                try (CSVWriter writer = new CSVWriter(new FileWriter(target), ';')) {
+                try (CSVWriter writer = new CSVWriter(getWin1251FileWriter(file), ';')) {
                     writer.writeNext(makeTableHeader());
                     resultsToExport.stream()
                             .map(ExportResultService.this::toCSVRow)

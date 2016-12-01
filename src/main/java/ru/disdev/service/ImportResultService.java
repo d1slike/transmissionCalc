@@ -11,10 +11,11 @@ import ru.disdev.entity.Type;
 import ru.disdev.utils.NumberUtils;
 
 import java.io.File;
-import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.disdev.utils.IOUtils.getWin1251FileReader;
 
 public class ImportResultService extends Service<List<Result>> {
 
@@ -31,7 +32,7 @@ public class ImportResultService extends Service<List<Result>> {
             @SuppressWarnings("unchecked")
             protected List<Result> call() throws Exception {
                 List<Result> list;
-                try (CSVReader reader = new CSVReader(new FileReader(source), ';')) {
+                try (CSVReader reader = new CSVReader(getWin1251FileReader(source), ';')) {
                     list = reader.readAll()
                             .stream()
                             .skip(1)
