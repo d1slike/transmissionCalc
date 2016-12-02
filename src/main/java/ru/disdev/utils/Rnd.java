@@ -7,8 +7,14 @@ public class Rnd {
     private static final Random RANDOM = new Random();
 
     public static int get(int min, int max) {
-        if (min >= max)
-            return Integer.MIN_VALUE;
+        if (min >= max) {
+            int temp = max;
+            max = min;
+            min = temp;
+            if (min == max) {
+                max++;
+            }
+        }
         return RANDOM.nextInt((max - min) + 1) + min;
     }
 

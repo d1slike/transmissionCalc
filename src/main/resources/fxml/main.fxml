@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
@@ -31,13 +30,18 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
+             <JFXButton fx:id="deleteButton" buttonType="RAISED"/>
          </children>
       </VBox>
    </right>
    <center>
       <ScrollPane fx:id="scrollPane" prefHeight="461.0" prefWidth="715.0" BorderPane.alignment="CENTER">
          <content>
-             <TableView fx:id="resultTable"/>
+             <TableView fx:id="resultTable">
+                 <columnResizePolicy>
+                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                 </columnResizePolicy>
+             </TableView>
          </content>
       </ScrollPane>
    </center>

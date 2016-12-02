@@ -61,9 +61,38 @@ public class Result {
     @Enum(GearingType.class)
     private ObjectProperty<GearingType> gearingType = new SimpleObjectProperty<>();
 
-
+    @Column(name = "Ka", type = Type.NUMBER, description = "Вспомогательный коэффициент")
+    private DoubleProperty Ka = new SimpleDoubleProperty();
+    @Column(name = "Диаметр шестерни", type = Type.NUMBER, description = "OТношение ширины венца к межосевому расстоянию")
+    private DoubleProperty dw1 = new SimpleDoubleProperty();
+    @Column(name = "PhiBd", type = Type.NUMBER, description = "OТношение ширины венца к ачальному диаметру шестерни")
+    private DoubleProperty phiBd = new SimpleDoubleProperty();
+    @Column(name = "Khb", type = Type.NUMBER, description = "Коэффициент распределения нагрузки")
+    private DoubleProperty Khb = new SimpleDoubleProperty();
+    @Column(name = "Sigm`HP", type = Type.NUMBER, description = "Допускаемое контактное напряжение, соответствующее числу циклов перемены напряжения,")
+    private DoubleProperty sigm_HP = new SimpleDoubleProperty();
+    @Column(name = "Nh0", type = Type.NUMBER, description = "Базовое число циклов перемены напряжения")
+    private DoubleProperty NHo = new SimpleDoubleProperty();
+    @Column(name = "Nhe", type = Type.NUMBER, description = "Эквивалетное число цикло пермены напряжений")
+    private DoubleProperty NHe = new SimpleDoubleProperty();
+    @Column(name = "Khl", type = Type.NUMBER, description = "Коэффициент долговечности")
+    private DoubleProperty Khl = new SimpleDoubleProperty();
+    @Column(name = "SigmHP", type = Type.NUMBER, description = "Допустимое контактное напряжение")
+    private DoubleProperty sigmHP = new SimpleDoubleProperty();
     @Column(name = "Межосевое расстояние", description = "Межосевое расстояние", type = Type.NUMBER)
     private DoubleProperty a = new SimpleDoubleProperty();
+    @Column(name = "Yf1", type = Type.NUMBER, description = "Вспомогательный коэффициент")
+    private DoubleProperty Yf1 = new SimpleDoubleProperty();
+    @Column(name = "Sigm`FP", type = Type.NUMBER, description = "Допустимое контактное напряжение, соответствующее базовому числу циклом перемены напряжений")
+    private DoubleProperty sigm_FP = new SimpleDoubleProperty();
+    @Column(name = "Nf0", type = Type.NUMBER, description = "Базовое число циклов перемены напряжений ")
+    private DoubleProperty Nf0 = new SimpleDoubleProperty();
+    @Column(name = "Nfe", type = Type.NUMBER, description = "OТношение ширины венца к межосевому расстоянию")
+    private DoubleProperty NFe = new SimpleDoubleProperty();
+    @Column(name = "Kf1", type = Type.NUMBER, description = "OТношение ширины венца к межосевому расстоянию")
+    private DoubleProperty Kf1 = new SimpleDoubleProperty();
+    @Column(name = "SigmFP", type = Type.NUMBER, description = "OТношение ширины венца к межосевому расстоянию")
+    private DoubleProperty SigmFP = new SimpleDoubleProperty();
     @Column(name = "m", description = "Модуль выносливаости по изгибу", type = Type.NUMBER)
     private DoubleProperty m = new SimpleDoubleProperty();
     @Column(name = "m'", description = "Модуль выносливаости по изгибу(округленный)", type = Type.NUMBER)
@@ -280,5 +309,65 @@ public class Result {
 
     public void setMm(double mm) {
         this.mm.set(mm);
+    }
+
+    public void setKa(double ka) {
+        this.Ka.set(ka);
+    }
+
+    public void setDw1(double dw1) {
+        this.dw1.set(dw1);
+    }
+
+    public void setPhiBd(double phiBd) {
+        this.phiBd.set(phiBd);
+    }
+
+    public void setKhb(double khb) {
+        this.Khb.set(khb);
+    }
+
+    public void setSigm_HP(double sigm_HP) {
+        this.sigm_HP.set(sigm_HP);
+    }
+
+    public void setNHo(double NHo) {
+        this.NHo.set(NHo);
+    }
+
+    public void setNHe(double NHe) {
+        this.NHe.set(NHe);
+    }
+
+    public void setKhl(double khl) {
+        this.Khl.set(khl);
+    }
+
+    public void setSigmHP(double sigmHP) {
+        this.sigmHP.set(sigmHP);
+    }
+
+    public void setYf1(double yf1) {
+        this.Yf1.set(yf1);
+    }
+
+    public void setSigm_FP(double sigm_FP) {
+        this.sigm_FP.set(sigm_FP);
+    }
+
+    public void setNf0(double nf0) {
+        this.Nf0.set(nf0);
+    }
+
+    public void setNFe(double NFe) {
+        this.NFe.set(NFe);
+    }
+
+    public void setKf1(double kf1) {
+        this.Kf1.set(kf1);
+    }
+
+    public void setSigmFP(double sigmFP) {
+        this.SigmFP.set(sigmFP);
     }
 }

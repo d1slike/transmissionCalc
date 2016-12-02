@@ -41,7 +41,7 @@ public class InputData {
     private BooleanProperty stepLoad = new SimpleBooleanProperty();
     @TextField(name = "Частота вращения", description = "Частота вращения")
     @DependOn(id = 1, showOn = CheckBoxState.UNCHEKED)
-    private DoubleProperty n = new SimpleDoubleProperty();
+    private DoubleProperty _n = new SimpleDoubleProperty();
     @TextField(name = "Tч", description = "Полноче число циклов работы за расчетный срок служы")
     @DependOn(id = 1, showOn = CheckBoxState.UNCHEKED)
     private DoubleProperty t = new SimpleDoubleProperty();

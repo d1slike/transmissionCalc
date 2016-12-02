@@ -13,8 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -33,9 +37,9 @@ public class MainController implements Controller {
 
     private static final FileChooser.ExtensionFilter CSV_FILER = new FileChooser.ExtensionFilter("CSV file", "*.csv");
     @FXML
-    private BorderPane root;
+    private JFXButton deleteButton;
     @FXML
-    private ScrollPane scrollPane;
+    private BorderPane root;
     @FXML
     private JFXButton newResultButton;
     @FXML
@@ -51,6 +55,7 @@ public class MainController implements Controller {
     private final FileChooser fileChooser = new FileChooser();
 
     private ObservableList<Result> results = FXCollections.observableArrayList();
+    private int selectedItem;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -59,16 +64,24 @@ public class MainController implements Controller {
         newResultButton.setOnAction(this::onNewResultButtonClick);
         newResultButton.setGraphic(new Icon("PLUS_CIRCLE"));
         newResultButton.setText("");
-        newResultButton.setGraphicTextGap(30);
         exportButton.setOnAction(this::onExportButtonClick);
-        exportButton.setGraphic(new Icon("UPLOAD"));
+        exportButton.setGraphic(new Icon("DOWNLOAD"));
         exportButton.setText("");
         importButton.setOnAction(this::onImportButtonClick);
-        importButton.setGraphic(new Icon("DOWNLOAD"));
+        importButton.setGraphic(new Icon("UPLOAD"));
         importButton.setText("");
         directoryChooser.setTitle("Директория для экспорта");
         fileChooser.setTitle("Файл для импорта");
         fileChooser.setSelectedExtensionFilter(CSV_FILER);
+        deleteButton.setVisible(false);
+        Icon trash = new Icon("TRASH");
+        trash.setTextFill(Color.RED);
+        deleteButton.setGraphic(trash);
+        deleteButton.setOnAction(this::onDeleteButtonClick);
+        resultTable.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            selectedItem = newValue.intValue();
+            deleteButton.setVisible(selectedItem != -1);
+        });
         FieldUtils.getFieldsListWithAnnotation(Result.class, Column.class)
                 .forEach(field -> {
                     field.setAccessible(true);
@@ -130,10 +143,15 @@ public class MainController implements Controller {
                     Tooltip tooltip = new Tooltip(annotation.description());
                     label.setTooltip(tooltip);
                     nextColumn.setGraphic(label);
-                    nextColumn.setResizable(false);
                     resultTable.getColumns().add(nextColumn);
                 });
 
+    }
+
+    private void onDeleteButtonClick(ActionEvent event) {
+        if (selectedItem != -1 && !results.isEmpty()) {
+            results.remove(selectedItem);
+        }
     }
 
     private void onNewResultButtonClick(ActionEvent event) {
@@ -195,7 +213,7 @@ public class MainController implements Controller {
     }
 
     private void updateControlStatus(boolean enable) {
-        Stream.of(exportButton, importButton, newResultButton)
+        Stream.of(exportButton, importButton, newResultButton, deleteButton)
                 .forEach(jfxButton -> jfxButton.setDisable(!enable));
     }
 }
