@@ -30,51 +30,54 @@ public class ImportResultService extends Service<List<Result>> {
     protected Task<List<Result>> createTask() {
         return new Task<List<Result>>() {
             @Override
-            @SuppressWarnings("unchecked")
             protected List<Result> call() throws Exception {
                 List<Result> list;
                 try (CSVReader reader = new CSVReader(getWin1251FileReader(source), ';')) {
                     list = reader.readAll()
                             .stream()
                             .skip(1)
-                            .map(line -> {
-                                Result result = new Result();
-                                Field[] fields =
-                                        FieldUtils.getFieldsWithAnnotation(Result.class, Column.class);
-                                for (int i = 0, fieldsLength = fields.length; i < fieldsLength; i++) {
-                                    Field field = fields[i];
-                                    field.setAccessible(true);
-                                    Column column = field.getAnnotation(Column.class);
-                                    Object property = null;
-                                    if (column.type() == Type.NUMBER) {
-                                        property = NumberUtils.parseDouble(line[i]).orElse(0.);
-                                    } else if (column.type() == Type.BOOLEAN) {
-                                        property = Boolean.parseBoolean(line[i]);
-                                    } else if (column.type() == Type.OBJECT && field.isAnnotationPresent(Enum.class)) {
-                                        Class enumClass = field.getAnnotation(Enum.class).value();
-                                        if (enumClass.isEnum()) {
-                                            for (Object o : enumClass.getEnumConstants()) {
-                                                if (o.toString().equals(line[i])) {
-                                                    property = o;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        property = line[i];
-                                    }
-                                    try {
-                                        Property<Object> prop = (Property<Object>) FieldUtils.readField(field, result);
-                                        prop.setValue(property);
-                                    } catch (IllegalAccessException ignored) {
-
-                                    }
-                                }
-                                return result;
-                            }).collect(Collectors.toList());
+                            .map(ImportResultService.this::mapResult)
+                            .collect(Collectors.toList());
                 }
                 return list;
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    private Result mapResult(String[] line) {
+        Result result = new Result();
+        Field[] fields =
+                FieldUtils.getFieldsWithAnnotation(Result.class, Column.class);
+        for (int i = 0, fieldsLength = fields.length; i < fieldsLength; i++) {
+            Field field = fields[i];
+            field.setAccessible(true);
+            Column column = field.getAnnotation(Column.class);
+            Object property = null;
+            if (column.type() == Type.NUMBER) {
+                property = NumberUtils.parseDouble(line[i]).orElse(0.);
+            } else if (column.type() == Type.BOOLEAN) {
+                property = Boolean.parseBoolean(line[i]);
+            } else if (column.type() == Type.OBJECT && field.isAnnotationPresent(Enum.class)) {
+                Class enumClass = field.getAnnotation(Enum.class).value();
+                if (enumClass.isEnum()) {
+                    for (Object o : enumClass.getEnumConstants()) {
+                        if (o.toString().equals(line[i])) {
+                            property = o;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                property = line[i];
+            }
+            try {
+                Property<Object> prop = (Property<Object>) FieldUtils.readField(field, result);
+                prop.setValue(property);
+            } catch (IllegalAccessException ignored) {
+
+            }
+        }
+        return result;
     }
 }
